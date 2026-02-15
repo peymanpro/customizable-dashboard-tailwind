@@ -1,78 +1,102 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+// src/pages/index.tsx
+import { useEffect, useState } from 'react';
+import { useTheme } from '@/hooks/useTheme';
+import ThemeCustomizer from '@/components/theme/ThemeCustomizer';
+import StatsCard from '@/components/dashboard/StatsCard';
+import RecentOrdersTable from '@/components/dashboard/RecentOrdersTable';
+import RevenueChart from '@/components/dashboard/RevenueChart';
+import { Stat, Order } from '@/types';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+export default function Dashboard() {
+  const { theme, isDarkMode } = useTheme();
+  const [stats, setStats] = useState<Stat[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsRes, ordersRes] = await Promise.all([
+          fetch('/api/stats'),
+          fetch('/api/recent-orders')
+        ]);
+        
+        const statsData = await statsRes.json();
+        const ordersData = await ordersRes.json();
+        
+        setStats(statsData.stats || statsData);
+        setOrders(ordersData.orders || ordersData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-export default function Home() {
+    fetchData();
+  }, []);
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
-    >
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the index.tsx file.
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* هدر */}
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Dashboard
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => {}}
+              className="btn btn-secondary"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <span className="mr-2">🔔</span>
+              Notifications
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs/pages/getting-started?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* کارت‌های آمار */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {loading ? (
+            // skeleton loading
+            [...Array(4)].map((_, i) => (
+              <div key={i} className="card h-32 animate-pulse bg-gray-200 dark:bg-gray-700" />
+            ))
+          ) : (
+            stats.map((stat) => (
+              <StatsCard key={stat.id} stat={stat} />
+            ))
+          )}
         </div>
-      </main>
+
+        {/* نمودار و جدول */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="lg:col-span-2">
+            <RevenueChart />
+          </div>
+          <div className="lg:col-span-1">
+            <div className="card h-full">
+              <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+              <div className="space-y-3">
+                <button className="btn btn-primary w-full">New Report</button>
+                <button className="btn btn-outline w-full">Export Data</button>
+                <button className="btn btn-outline w-full">Settings</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* جدول سفارشات اخیر */}
+        <RecentOrdersTable orders={orders} loading={loading} />
+
+        {/* فوتر ساده */}
+        <footer className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+          <p>© 2024 Customizable Dashboard. Built with Next.js and Tailwind CSS.</p>
+        </footer>
+      </div>
+
+      {/* کامپوننت شخصی‌ساز تم */}
+      <ThemeCustomizer />
     </div>
   );
 }
