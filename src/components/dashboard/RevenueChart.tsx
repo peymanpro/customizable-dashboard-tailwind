@@ -1,5 +1,6 @@
 // src/components/dashboard/RevenueChart.tsx
 import { useEffect, useState } from 'react';
+import { Card } from '@/components/ui';
 
 interface ChartData {
   labels: string[];
@@ -29,21 +30,21 @@ export default function RevenueChart() {
   }, []);
 
   if (loading) {
-    return <div className="card h-80 animate-pulse bg-gray-200 dark:bg-gray-700" />;
+    return <Card className="h-80 animate-pulse bg-gray-200 dark:bg-gray-700" padding="none" />;
   }
 
   if (!chartData) {
     return (
-      <div className="card h-80 flex items-center justify-center">
+      <Card className="h-80 flex items-center justify-center">
         <p className="text-gray-500 dark:text-gray-400">No data available</p>
-      </div>
+      </Card>
     );
   }
 
   const maxValue = Math.max(...chartData.datasets[0].data);
 
   return (
-    <div className="card">
+    <Card>
       <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Revenue Overview</h3>
       <div className="h-64 flex items-end justify-between gap-2">
         {chartData.labels.map((label: string, index: number) => {
@@ -52,10 +53,10 @@ export default function RevenueChart() {
           return (
             <div key={index} className="flex-1 flex flex-col items-center gap-2">
               <div 
-                className="w-full bg-primary-500 dark:bg-primary-600 rounded-t transition-all duration-300 hover:bg-primary-600 dark:hover:bg-primary-500"
+                className="w-full bg-primary-500 dark:bg-primary-600 rounded-t transition-all duration-300 hover:bg-primary-600 dark:hover:bg-primary-500 relative group"
                 style={{ height: `${height}%` }}
               >
-                <div className="opacity-0 hover:opacity-100 transition-opacity text-xs text-white text-center pt-1">
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
                   ${value}
                 </div>
               </div>
@@ -70,6 +71,6 @@ export default function RevenueChart() {
         <span className="inline-block w-3 h-3 bg-primary-500 rounded-full mr-2"></span>
         {chartData.datasets[0].label}
       </div>
-    </div>
+    </Card>
   );
 }

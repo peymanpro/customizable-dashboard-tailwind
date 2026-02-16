@@ -1,5 +1,6 @@
 // src/components/dashboard/StatsCard.tsx
 import { Stat } from '@/types';
+import { Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 interface StatsCardProps {
@@ -10,7 +11,7 @@ export default function StatsCard({ stat }: StatsCardProps) {
   const isPositive = stat.change > 0;
   
   return (
-    <div className="card hover:shadow-lg transition-all duration-300 group">
+    <Card variant="interactive" className="group">
       <div className="flex justify-between items-start">
         <div>
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -37,6 +38,6 @@ export default function StatsCard({ stat }: StatsCardProps) {
           vs last month
         </span>
       </div>
-    </div>
+    </Card>
   );
 }

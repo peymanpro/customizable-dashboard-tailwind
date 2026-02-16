@@ -1,6 +1,7 @@
 // src/pages/index.tsx
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
+import { Button } from '@/components/ui';
 import ThemeCustomizer from '@/components/theme/ThemeCustomizer';
 import StatsCard from '@/components/dashboard/StatsCard';
 import RecentOrdersTable from '@/components/dashboard/RecentOrdersTable';
@@ -45,13 +46,10 @@ export default function Dashboard() {
             Dashboard
           </h1>
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => {}}
-              className="btn btn-secondary"
-            >
+            <Button variant="secondary" size="sm">
               <span className="mr-2">🔔</span>
               Notifications
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -78,9 +76,9 @@ export default function Dashboard() {
             <div className="card h-full">
               <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <button className="btn btn-primary w-full">New Report</button>
-                <button className="btn btn-outline w-full">Export Data</button>
-                <button className="btn btn-outline w-full">Settings</button>
+                <Button variant="primary" className="w-full">New Report</Button>
+                <Button variant="outline" className="w-full">Export Data</Button>
+                <Button variant="outline" className="w-full">Settings</Button>
               </div>
             </div>
           </div>

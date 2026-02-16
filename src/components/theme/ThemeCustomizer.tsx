@@ -1,11 +1,21 @@
 // src/components/theme/ThemeCustomizer.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/hooks/useTheme';
+import { Button, Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 export default function ThemeCustomizer() {
   const { theme, setPrimaryColor, setFont, setBorderRadius, toggleDarkMode, availableColors, availableFonts, isDarkMode } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="fixed bottom-6 right-6 w-14 h-14" />;
+  }
 
   return (
     <>
@@ -20,10 +30,10 @@ export default function ThemeCustomizer() {
 
       {/* پنل شخصی‌ساز */}
       <div className={cn(
-        "fixed bottom-24 right-6 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 transition-all duration-300 z-50",
+        "fixed bottom-24 right-6 w-80 transition-all duration-300 z-50",
         isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
       )}>
-        <div className="p-5">
+        <Card className="shadow-2xl border border-gray-200 dark:border-gray-700">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-semibold text-gray-900 dark:text-white">Theme Customizer</h3>
             <button
@@ -120,12 +130,12 @@ export default function ThemeCustomizer() {
             <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Preview</p>
               <div className="flex gap-2">
-                <button className="btn btn-primary text-sm">Primary</button>
-                <button className="btn btn-secondary text-sm">Secondary</button>
+                <Button variant="primary" size="sm">Primary</Button>
+                <Button variant="secondary" size="sm">Secondary</Button>
               </div>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
     </>
   );
